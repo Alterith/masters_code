@@ -278,7 +278,7 @@ if __name__ == "__main__":
             torch.save({
                 'model_state_dict': model.state_dict()
             }, "./models/"+arch_name.upper()+".pt")
-            experiment.log_asset("./models/"+arch_name.upper()+".pt")
+            experiment.log_asset("./classification_model_checkpoints/"+arch_name.upper()+".pt")
             
             if epoch % 5 == 0:
             
