@@ -3,7 +3,7 @@ import torch.nn as nn
 
 class C3D_Architecture(nn.Module):
 
-    def __init__(self, num_classes=400) -> None:
+    def __init__(self, num_classes=368) -> None:
 
         """This is a R(2+1)D Constructor Function
         Args:
