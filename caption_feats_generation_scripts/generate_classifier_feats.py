@@ -4,27 +4,34 @@ warnings.filterwarnings("ignore")
 # relative path imports
 import sys
 # relative model imports
-sys.path.insert(0, '../models/c3d/attn/')
-sys.path.insert(0, '../models/c3d/normal/')
-sys.path.insert(0, '../models/r2p1d/attn/')
-sys.path.insert(0, '../models/r2p1d/normal/')
-
+sys.path.insert(0, '../models/')
+sys.path.insert(0, '../')
 # generic imports
 
-from full_vid_data_loader_decord import video_dataset
+from full_vid_data_loader import video_dataset
 import os
 import h5py
 # torch imports
 import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torch.utils.data import RandomSampler
 
 from tqdm import tqdm
 import gc
 
-# dirty fix to train model
-#from C3D_500_feats_16 import C3D_Architecture as architecture
-from C3D_Attn import C3D_Architecture as architecture
+from C3D import C3D_Architecture as architecture_c3d
+from C3D_16 import C3D_Architecture as architecture_c3d_16
+from C3D_Attn_8 import C3D_Architecture as architecture_c3d_a
+from C3D_Attn_16 import C3D_Architecture as architecture_c3d_a_16
+from mobileNetV3_3D_Attn import MobileNetV3 as architecture_mobilenet_a
+from mobileNetV3_3D import MobileNetV3 as architecture_mobilenet
+
+from opt import default_options
+
+
 arch_name = "C3D_ATTN"
 
 torch.autograd.set_detect_anomaly(True)
@@ -67,8 +74,6 @@ def fetch_dataloader(data_dir, types, params, stride_idx):
 
 # Hyper_params
 
-## TODO: for loop through model, raad up on how to validate model n validation set, use model.eval?
-
 if __name__ == "__main__":
     torch.autograd.set_detect_anomaly(True)
     #manage_dataset_and_models()
@@ -94,9 +99,7 @@ if __name__ == "__main__":
     torch.manual_seed(818976)
     if params['cuda']: torch.cuda.manual_seed(818976)
     dataloaders = fetch_dataloader(
-        #"/media/alterith/SR6/Data/kinetics_600/"
-        #"/media/alterith/Elements/activitynet_captions/activitynet_captions/"
-        "/media/alterith/Elements/activitynet_captions/activitynet_captions/"
+        options['localization_data_path']
         ,['val_2'], params, stride_idx=int(sys.argv[2]))
     print(dataloaders)
     val_dl = dataloaders['val_2']
@@ -106,10 +109,21 @@ if __name__ == "__main__":
     torch.backends.cudnn.benchmark = False
 
 
-    model = architecture(num_classes=368)
-    #PATH = "C3D_69_kraken.pt"
-    PATH= "C3D_Attn_368_sgd_18.pt"
-    checkpoint = torch.load(PATH, map_location="cuda:0")
+    model = None
+    if arch_name == "c3d_8":
+        model = architecture_c3d()
+    elif arch_name == "c3d_16":
+        model = architecture_c3d_16()
+    elif arch_name == "c3d_attn_8":
+        model = architecture_c3d_a()
+    elif arch_name == "c3d_attn_16":
+        model = architecture_c3d_a_16()
+    elif arch_name == "mobilenet":
+        model = architecture_mobilenet()
+    elif arch_name == "mobilenet_attn":
+        model = architecture_mobilenet_a()
+    PATH = options["classifier_checkpoint"]
+    checkpoint = torch.load(PATH, map_location="cuda:1")
     model.load_state_dict(checkpoint["model_state_dict"])
     model = model.float()
     model.eval()
@@ -130,7 +144,7 @@ if __name__ == "__main__":
                 
                 print(frames.shape)
 
-                if frames.shape[1] <= 450:
+                if frames.shape[1] <= 900:
                     name = name[0].split("/")[-1][:-4]
                     name = name.encode("ascii", "ignore")
                     print(name)
@@ -147,7 +161,6 @@ if __name__ == "__main__":
                         prev_layer_output = prev_layer_output.squeeze(-1)
 
                         if i == 0 and j == 0 and int(sys.argv[1]) == 1:
-                            #h = h5py.File('4096_feats_C3D_69_stride_16_val_1.hdf5', "a")
                             h = h5py.File(sys.argv[3], "a")
 
                             # specify none to extend indefinately
