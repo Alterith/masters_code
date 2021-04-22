@@ -278,13 +278,13 @@ if __name__ == "__main__":
             torch.save({
                 'model_state_dict': model.state_dict()
             }, "./models/"+arch_name.upper()+".pt")
-            experiment.log_asset("./classification_model_checkpoints/"+arch_name.upper()+".pt")
+            experiment.log_asset("./models/"+arch_name.upper()+".pt")
             
             if epoch % 5 == 0:
             
                 val_loss_old = val_loss
                 val_loss = val_model(model, val_loader)
-                if val_loss - val_loss_old < 1e-4:
+                if val_loss - val_loss_old < 1e-3:
                     scheduler_step.step()
                     step_count += 1
 

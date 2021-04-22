@@ -15,9 +15,6 @@ import torch.optim as optim
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torch.utils.data import RandomSampler
-from torch.optim.lr_scheduler import StepLR
-# warm up lr
-from warmup_scheduler import GradualWarmupScheduler
 
 from torchsummary import summary
 from tqdm import tqdm
@@ -87,25 +84,25 @@ def accuracy(output, target, topk=(1,)):
 
 # Hyper_params
 
-## TODO: for loop through model, raad up on how to validate model n validation set, use model.eval?
-
 if __name__ == "__main__":
     torch.autograd.set_detect_anomaly(True)
     #manage_dataset_and_models()
     cuda_flag = torch.cuda.is_available()
     # read in params based on model from json file
     params = {
-        "num_vids_per_epoch": 1000000,
         "batch_size": 1,
         "num_workers": 1,
-        "temporal_depth": 8,
-        "epochs": 71,
+        "temporal_depth": options['temporal_depth'],
         "patch_width": 112,
         "patch_height": 112,
-        "dataset_name": 'kinetics_400',
+        "dataset_name": 'kinetics_368',
         "use_sampler": False
     }
     
+    options = default_options(sys.argv[1])
+    
+    arch_name = options["arch_name"]
+
     experiment = Experiment(api_key=options["experiment_key"], project_name=options["project_name"], workspace=options["experiment_workspace"])
     experiment.set_name(options["experiment_name"])
     experiment.log_parameters(params)
