@@ -4,12 +4,19 @@
 Pytorch Implementation of my masters code. The impact of encoded features on dense video captioning performance.
 
 ### Data Preparation
-<!---
-Please download annotation data and C3D features from the website [ActivityNet Captions](https://cs.stanford.edu/people/ranjaykrishna/densevid/). The ActivityNet C3D features with stride of 64 frames (used in my paper) can be found in [https://drive.google.com/open?id=1UquwlUXibq-RERE8UO4_vSTf5IX67JhW](https://drive.google.com/open?id=1UquwlUXibq-RERE8UO4_vSTf5IX67JhW).
-Please follow the script dataset/ActivityNet_Captions/preprocess/anchors/get_anchors.py to obtain clustered anchors and their pos/neg weights (for handling imbalance class problem). I already put the generated files in dataset/ActivityNet_Captions/preprocess/anchors/.
-Please follow the script dataset/ActivityNet_Captions/preprocess/build_vocab.py to build word dictionary and to build train/val/test encoded sentence data.
---->
+
+Please download the Kinetics-600 labels that can be found at [Kinetics](https://deepmind.com/research/open-source/kinetics)
+
+Thereafter use the "masters_code/dataset/Kinetics/kinetics_368_classes.csv" file to extract the video IDs associated only with the 368 classes associated with the kinetics 368 dataset. Thereafter use the [kinetics-downloader](https://github.com/piaxar/kinetics-downloader) repo to download the videos and place them in train and val folders in the "masters_code/dataset/Kinetics/" folder respectively.
+
+Our Caption video features are already generated and provided below as such there is no need to redownload the activitynet captions dataset.
+
+Please download ActivityNet Captions annotation data from the website [ActivityNet Captions](https://cs.stanford.edu/people/ranjaykrishna/densevid/).
+
+We used the preprocessed data given by Jingwen Wang in their "Bidirectional Attentive Fusion with Context Gating for Dense Video Captioning" paper code which was obtained from [here](https://github.com/JaywongWang/DenseVideoCaptioning). Please follow their steps and folder structure. 
+
 ### Hyper Parameters
+The hyper parameters used are included in the opt.py file adapted from [Jingwen Wang's Dense video captioning implementation](https://github.com/JaywongWang/DenseVideoCaptioning)
 <!---
 The configuration (from my experiments) is given in opt.py, including model setup, training options, and testing options. You may want to set max_proposal_num=1000 if saving valiation time is not the first priority.
 --->
