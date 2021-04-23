@@ -21,8 +21,7 @@ The hyper parameters used are included in the opt.py file adapted from [Jingwen 
 ### Training
 Train the classification models by using the script train_classifier.py
 
-Train the caption models by using the script train_captions.py \n
-First pretrain the temporal action proposal module then jointly train it with the caption module 
+Train the caption models by using the script train_captions.py  First pretrain the temporal action proposal module then jointly train it with the caption module 
 
 ### Prediction
 To run inference on the classification model run valid_model.py
